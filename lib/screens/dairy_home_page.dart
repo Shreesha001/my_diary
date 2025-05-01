@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_diary/screens/add_entry_page.dart';
+import 'package:my_diary/screens/card_detail_screen.dart';
 import 'package:my_diary/utils/colors.dart';
 import 'dart:io';
 
@@ -48,109 +49,104 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blueGrey.shade900,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle_outline, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text(
-                    "3-Day Habit Challenge",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: filteredEntries.length,
               itemBuilder: (context, index) {
                 final entry = filteredEntries[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  color: Colors.blueGrey.shade800,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              entry["date"] ?? '',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              entry["emoji"] ?? '',
-                              style: TextStyle(fontSize: 22),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (entry["imagePath"] != null &&
-                                entry["imagePath"].isNotEmpty)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  File(entry["imagePath"]),
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
+                return GestureDetector(
+                  onTap: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CardDetailScreen(entry: entry),
+                      ),
+                    );
+
+                    if (result == 'delete') {
+                      // User confirmed deletion
+                      setState(() {
+                        entries.removeAt(index);
+                      });
+                    } else if (result is Map<String, dynamic>) {
+                      // User saved updated entry
+                      setState(() {
+                        entries[index] = result;
+                      });
+                    }
+                    // else: user just went back, do nothing
+                  },
+
+                  child: Card(
+                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    color: Colors.blueGrey.shade800,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                entry["date"] ?? '',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
                                 ),
-                              )
-                            else
-                              Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade700,
+                              ),
+                              Text(
+                                entry["emoji"] ?? '',
+                                style: TextStyle(fontSize: 22),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (entry["imagePath"] != null &&
+                                  entry["imagePath"].isNotEmpty)
+                                ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    File(entry["imagePath"]),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                child: Icon(Icons.image, color: Colors.white30),
-                              ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry["title"] ?? '',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      entry["title"] ?? '',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 6),
-                                  Text(
-                                    entry["desc"] ?? '',
-                                    style: TextStyle(color: Colors.white70),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
+                                    SizedBox(height: 6),
+                                    Text(
+                                      entry["desc"] ?? '',
+                                      style: TextStyle(color: Colors.white70),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

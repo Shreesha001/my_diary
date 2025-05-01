@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import '../utils/colors.dart'; // Make sure your color constants are stored here
 
 class AddEntryPage extends StatefulWidget {
   @override
@@ -23,6 +24,19 @@ class _AddEntryPageState extends State<AddEntryPage> {
       initialDate: selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: primaryColor,
+              onPrimary: whiteColor,
+              surface: whiteColor,
+              onSurface: textPrimaryColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -49,10 +63,11 @@ class _AddEntryPageState extends State<AddEntryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1A2D),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Add New Entry"),
-        backgroundColor: Colors.transparent,
+        title: Text("Add New Entry", style: TextStyle(color: whiteColor)),
+        backgroundColor: appBarColor,
+        iconTheme: IconThemeData(color: whiteColor),
         elevation: 0,
       ),
       body: Padding(
@@ -61,37 +76,37 @@ class _AddEntryPageState extends State<AddEntryPage> {
           children: [
             TextButton.icon(
               onPressed: _pickDate,
-              icon: Icon(Icons.calendar_today, color: Colors.white),
+              icon: Icon(Icons.calendar_today, color: primaryColor),
               label: Text(
                 DateFormat('dd MMM yyyy').format(selectedDate),
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: textPrimaryColor),
               ),
             ),
             SizedBox(height: 16),
             TextField(
               controller: titleController,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: textPrimaryColor),
               decoration: InputDecoration(
                 labelText: "Title",
-                labelStyle: TextStyle(color: Colors.white70),
+                labelStyle: TextStyle(color: textSecondaryColor),
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             TextField(
               controller: descController,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: textPrimaryColor),
               maxLines: 4,
               decoration: InputDecoration(
                 labelText: "Description",
-                labelStyle: TextStyle(color: Colors.white70),
+                labelStyle: TextStyle(color: textSecondaryColor),
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 20),
             Text(
               "How was your day?",
-              style: TextStyle(fontSize: 18, color: Colors.white70),
+              style: TextStyle(fontSize: 18, color: textSecondaryColor),
             ),
             SizedBox(height: 10),
             Wrap(
@@ -106,9 +121,9 @@ class _AddEntryPageState extends State<AddEntryPage> {
                           shape: BoxShape.circle,
                           color:
                               selectedEmoji == emoji
-                                  ? Colors.blueAccent
+                                  ? primarylightColor
                                   : Colors.transparent,
-                          border: Border.all(color: Colors.white70),
+                          border: Border.all(color: primaryColor),
                         ),
                         child: Text(emoji, style: TextStyle(fontSize: 24)),
                       ),
@@ -118,9 +133,12 @@ class _AddEntryPageState extends State<AddEntryPage> {
             SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: _pickImage,
-              icon: Icon(Icons.image),
-              label: Text("Add Image (Optional)"),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white10),
+              icon: Icon(Icons.image, color: whiteColor),
+              label: Text(
+                "Add Image (Optional)",
+                style: TextStyle(color: whiteColor),
+              ),
+              style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
             ),
             if (selectedImage != null) ...[
               SizedBox(height: 10),
@@ -146,9 +164,9 @@ class _AddEntryPageState extends State<AddEntryPage> {
                   });
                 }
               },
-              child: Text("Save Entry"),
+              child: Text("Save Entry", style: TextStyle(color: whiteColor)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: secondaryColor,
                 padding: EdgeInsets.symmetric(vertical: 12),
               ),
             ),
