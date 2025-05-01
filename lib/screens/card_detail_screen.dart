@@ -112,10 +112,6 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text(
-          "Entry Details",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
-        ),
         backgroundColor: appBarColor,
         elevation: 0,
         centerTitle: true,
@@ -125,9 +121,27 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
             tooltip: "Delete Entry",
             onPressed: _deleteEntry,
           ),
-          IconButton(
-            icon: Icon(Icons.save, color: whiteColor),
-            onPressed: _saveChanges,
+          Container(
+            margin: EdgeInsets.only(right: 12),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue, // Blue background
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                elevation: 2,
+              ),
+              onPressed: _saveChanges,
+              child: Text(
+                "Save",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ),
         ],
       ),
