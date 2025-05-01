@@ -65,6 +65,9 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
       builder:
           (context) => AlertDialog(
             backgroundColor: secondaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
             title: Text(
               "Delete Entry",
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
@@ -75,15 +78,21 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false), // Cancel
+                onPressed: () => Navigator.pop(context, false),
                 child: Text(
                   "Cancel",
                   style: TextStyle(color: Colors.green, fontSize: 16),
                 ),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () => Navigator.pop(context, true), // Confirm
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                onPressed: () => Navigator.pop(context, true),
                 child: Text(
                   "Delete",
                   style: TextStyle(color: whiteColor, fontSize: 16),
@@ -94,7 +103,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
     );
 
     if (shouldDelete == true) {
-      Navigator.pop(context, 'delete'); // Use a distinct string
+      Navigator.pop(context, 'delete');
     }
   }
 
@@ -103,8 +112,13 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text("Entry Detail"),
+        title: Text(
+          "Entry Details",
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+        ),
         backgroundColor: appBarColor,
+        elevation: 0,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.delete, color: Colors.white),
@@ -118,73 +132,205 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
-                controller: _titleController,
+              // Title Section
+              Text(
+                'Title',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimaryColor,
+                  fontSize: 16,
+                  color: textSecondaryColor.withOpacity(0.8),
+                  fontWeight: FontWeight.w500,
                 ),
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  labelStyle: TextStyle(color: textSecondaryColor),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
+              ),
+              SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: primaryColor.withOpacity(0.3),
+                    width: 2,
                   ),
+                ),
+                child: TextField(
+                  controller: _titleController,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimaryColor,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: InputBorder.none,
+                    hintText: 'Enter title...',
+                    hintStyle: TextStyle(
+                      color: textSecondaryColor.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
+
+              // Description Section
+              Text(
+                'Description',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textSecondaryColor.withOpacity(0.8),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: primaryColor.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: TextField(
+                  controller: _descController,
+                  maxLines: 5,
+                  style: TextStyle(fontSize: 16, color: textSecondaryColor),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    border: InputBorder.none,
+                    hintText: 'Write your thoughts...',
+                    hintStyle: TextStyle(
+                      color: textSecondaryColor.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 28),
+
+              // Image Section
+              Text(
+                'Image',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textSecondaryColor.withOpacity(0.8),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(height: 12),
-              TextField(
-                controller: _descController,
-                maxLines: null,
-                style: TextStyle(fontSize: 16, color: textSecondaryColor),
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  labelStyle: TextStyle(color: textSecondaryColor),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
               if (_selectedImage != null && _selectedImage!.existsSync())
                 Stack(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        _selectedImage!,
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          _selectedImage!,
+                          width: double.infinity,
+                          height: 220,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     Positioned(
-                      top: 8,
-                      right: 8,
+                      top: 12,
+                      right: 12,
                       child: GestureDetector(
                         onTap: _deleteImage,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.red,
-                          child: Icon(Icons.delete, color: Colors.white),
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 )
               else
-                Text("No image selected", style: TextStyle(color: Colors.grey)),
-              SizedBox(height: 16),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                onPressed: _pickImage,
-                icon: Icon(Icons.image, color: whiteColor),
-                label: Text("Pick Image", style: TextStyle(color: whiteColor)),
+                Container(
+                  width: double.infinity,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: textSecondaryColor.withOpacity(0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image_outlined,
+                        size: 40,
+                        color: textSecondaryColor.withOpacity(0.4),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "No image selected",
+                        style: TextStyle(
+                          color: textSecondaryColor.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              SizedBox(height: 20),
+              Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: _pickImage,
+                    icon: Icon(
+                      Icons.add_photo_alternate_outlined,
+                      color: whiteColor,
+                    ),
+                    label: Text(
+                      "Select Image",
+                      style: TextStyle(
+                        color: whiteColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),
