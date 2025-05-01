@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_diary/screens/add_entry_page.dart';
 import 'package:my_diary/screens/card_detail_screen.dart';
+import 'package:my_diary/screens/search_screen.dart';
 import 'package:my_diary/utils/colors.dart';
 import 'dart:io';
 
@@ -79,7 +80,7 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
 
                   child: Card(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    color: Colors.blueGrey.shade800,
+                    color: cardColor, // Updated to use palette color
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -95,7 +96,7 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
                                 entry["date"] ?? '',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white,
+                                  color: whiteColor, // From palette
                                 ),
                               ),
                               Text(
@@ -119,7 +120,6 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
                                     fit: BoxFit.cover,
                                   ),
                                 ),
-
                               SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -128,7 +128,7 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
                                     Text(
                                       entry["title"] ?? '',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: whiteColor, // From palette
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -136,8 +136,10 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
                                     SizedBox(height: 6),
                                     Text(
                                       entry["desc"] ?? '',
-                                      style: TextStyle(color: Colors.white70),
-                                      maxLines: 3,
+                                      style: TextStyle(
+                                        color: whiteColor.withOpacity(0.8),
+                                      ),
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
@@ -171,73 +173,6 @@ class _DiaryHomePageState extends State<DiaryHomePage> {
         child: Icon(Icons.add),
         backgroundColor: Colors.blueAccent,
       ),
-    );
-  }
-}
-
-class DiarySearchDelegate extends SearchDelegate {
-  final List<Map<String, dynamic>> entries;
-
-  DiarySearchDelegate(this.entries);
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [IconButton(icon: Icon(Icons.clear), onPressed: () => query = '')];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () => close(context, null),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final results =
-        entries
-            .where(
-              (entry) =>
-                  entry['title'].toLowerCase().contains(query.toLowerCase()) ||
-                  entry['desc'].toLowerCase().contains(query.toLowerCase()),
-            )
-            .toList();
-
-    return ListView(
-      children:
-          results
-              .map(
-                (entry) => ListTile(
-                  title: Text(entry['title']),
-                  subtitle: Text(entry['desc']),
-                ),
-              )
-              .toList(),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestions =
-        entries
-            .where(
-              (entry) =>
-                  entry['title'].toLowerCase().contains(query.toLowerCase()) ||
-                  entry['desc'].toLowerCase().contains(query.toLowerCase()),
-            )
-            .toList();
-
-    return ListView(
-      children:
-          suggestions
-              .map(
-                (entry) => ListTile(
-                  title: Text(entry['title']),
-                  subtitle: Text(entry['desc']),
-                ),
-              )
-              .toList(),
     );
   }
 }

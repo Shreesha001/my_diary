@@ -15,4 +15,4 @@ const blackColor = Colors.black;
 const iconColor = secondaryColor;
 
 const primarylightColor = Color(0xFFBFC6FF);
-const tileColor = primaryColor;
+const cardColor = Color.fromARGB(255, 3, 54, 121);
