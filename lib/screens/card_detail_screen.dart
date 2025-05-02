@@ -16,6 +16,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descController;
   File? _selectedImage;
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -49,13 +50,23 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
     });
   }
 
+  void _toggleEdit() {
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
   void _saveChanges() {
+    setState(() {
+      _isEditing = false;
+    });
     Navigator.pop(context, {
       'title': _titleController.text,
       'desc': _descController.text,
       'imagePath': _selectedImage?.path ?? '',
       'date': widget.entry['date'],
       'emoji': widget.entry['emoji'],
+      'hashtags': widget.entry['hashtags'], // Keep hashtags as-is
     });
   }
 
@@ -64,7 +75,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: secondaryColor,
+            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
@@ -79,24 +90,18 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.green, fontSize: 16),
-                ),
+                child: Text("Cancel", style: TextStyle(color: Colors.green)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(
-                  "Delete",
-                  style: TextStyle(color: whiteColor, fontSize: 16),
-                ),
+                child: Text("Delete", style: TextStyle(color: whiteColor)),
               ),
             ],
           ),
@@ -109,39 +114,25 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final hashtags = widget.entry['hashtags'] as List<dynamic>? ?? [];
+
     return Scaffold(
       backgroundColor: bgc,
       appBar: AppBar(
         backgroundColor: appBarColor,
-        elevation: 0,
         centerTitle: true,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.delete, color: Colors.white),
-            tooltip: "Delete Entry",
             onPressed: _deleteEntry,
           ),
-          Container(
-            margin: EdgeInsets.only(right: 12),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // Blue background
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                elevation: 2,
-              ),
-              onPressed: _saveChanges,
-              child: Text(
-                "Save",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+          IconButton(
+            icon: Icon(
+              _isEditing ? Icons.check : Icons.edit,
+              color: Colors.white,
             ),
+            onPressed: _isEditing ? _saveChanges : _toggleEdit,
           ),
         ],
       ),
@@ -151,196 +142,127 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title Section
-              Text(
-                'Title',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: primaryColor.withOpacity(0.3),
-                    width: 2,
-                  ),
-                ),
-                child: TextField(
-                  controller: _titleController,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
+              // Title
+              _isEditing
+                  ? TextField(
+                    controller: _titleController,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    border: InputBorder.none,
-                    hintText: 'Enter title...',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                  ),
-                ),
-              ),
-              SizedBox(height: 24),
-
-              // Description Section
-              Text(
-                'Description',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: primaryColor.withOpacity(0.3),
-                    width: 2,
-                  ),
-                ),
-                child: TextField(
-                  controller: _descController,
-                  maxLines: 5,
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: InputBorder.none,
-                    hintText: 'Write your thoughts...',
-                    hintStyle: TextStyle(
-                      color: textSecondaryColor.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 28),
-
-              // Image Section
-              Text(
-                'Image',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withOpacity(0.8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 12),
-              if (_selectedImage != null && _selectedImage!.existsSync())
-                Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          _selectedImage!,
-                          width: double.infinity,
-                          height: 220,
-                          fit: BoxFit.cover,
-                        ),
+                    decoration: InputDecoration(
+                      hintText: 'Enter title...',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: UnderlineInputBorder(
+                        // Thin underline
+                        borderSide: BorderSide(color: Colors.white, width: 1),
                       ),
                     ),
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: GestureDetector(
-                        onTap: _deleteImage,
-                        child: Container(
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.6),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
+                  )
+                  : Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Colors.white, width: 1),
+                      ), // Thin underline
                     ),
-                  ],
-                )
-              else
-                Container(
-                  width: double.infinity,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.image_outlined,
-                        size: 40,
-                        color: Colors.white.withOpacity(0.4),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        "No image selected",
-                        style: TextStyle(color: Colors.white.withOpacity(0.6)),
-                      ),
-                    ],
-                  ),
-                ),
-              SizedBox(height: 20),
-              Center(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                    ),
-                    onPressed: _pickImage,
-                    icon: Icon(
-                      Icons.add_photo_alternate_outlined,
-                      color: whiteColor,
-                    ),
-                    label: Text(
-                      "Select Image",
+                    child: Text(
+                      _titleController.text,
                       style: TextStyle(
-                        color: whiteColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                ),
-              ),
               SizedBox(height: 20),
+
+              // Image
+              if (_selectedImage != null && _selectedImage!.existsSync())
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    _selectedImage!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              SizedBox(height: 20),
+
+              // Description
+              _isEditing
+                  ? TextField(
+                    controller: _descController,
+                    maxLines: null,
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Enter description...',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      border: InputBorder.none,
+                    ),
+                  )
+                  : Text(
+                    _descController.text,
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+              SizedBox(height: 20),
+
+              // Hashtags
+              if (hashtags.isNotEmpty)
+                Wrap(
+                  spacing: 8,
+                  children:
+                      hashtags.map((tag) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white70),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
+
+              SizedBox(height: 30),
+
+              // Image Picker (only in edit mode)
+              if (_isEditing)
+                ElevatedButton.icon(
+                  onPressed: _pickImage,
+                  icon: Icon(
+                    Icons.add_photo_alternate_outlined,
+                    color: whiteColor,
+                  ),
+                  label: Text(
+                    "Select Image",
+                    style: TextStyle(
+                      color: whiteColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

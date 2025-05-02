@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:my_diary/utils/colors.dart';
+import 'package:my_diary/widgets/bullet_point_picker.dart';
 import 'package:my_diary/widgets/speech_to_text_screen.dart';
 import 'package:my_diary/widgets/text_color_picker.dart';
 import 'package:my_diary/widgets/theme_picker.dart';
@@ -22,12 +22,40 @@ class _AddEntryPageState extends State<AddEntryPage> {
   Color textColor = Colors.white;
   final FocusNode titleFocus = FocusNode();
   final FocusNode descFocus = FocusNode();
+  List<String> hashtags = [];
 
   final ImagePicker _picker = ImagePicker();
   TextAlign selectedAlign = TextAlign.left;
   Color selectedTextColor = Colors.white;
   String selectedFontFamily = 'Roboto';
   double selectedFontSize = 18;
+  String selectedBullet = '*';
+  @override
+  void initState() {
+    super.initState();
+    // Listen for changes in the descController to detect new lines
+    descController.addListener(_handleBulletOnNewLine);
+  }
+
+  // Handle bullet insertion whenever a new line is created
+  void _handleBulletOnNewLine() {
+    final text = descController.text;
+
+    // If the last character is a new line, insert the bullet point
+    if (text.endsWith('\n')) {
+      descController.text += '$selectedBullet ';
+      descController.selection = TextSelection.fromPosition(
+        TextPosition(offset: descController.text.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    // Dispose the controller listener
+    descController.removeListener(_handleBulletOnNewLine);
+    super.dispose();
+  }
 
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
@@ -65,6 +93,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     "desc": descController.text,
                     "emoji": selectedEmoji ?? '',
                     "imagePath": selectedImage?.path ?? '',
+                    "hashtags": hashtags,
                   });
                 } else {
                   // Show warning dialog
@@ -255,17 +284,39 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[700]?.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20),
+                  if (hashtags.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 10),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children:
+                              hashtags.map((tag) {
+                                return Container(
+                                  margin: EdgeInsets.only(right: 8),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    border: Border.all(color: Colors.white70),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    tag,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      "# Ghjn",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
+
                   if (selectedImage != null) ...[
                     SizedBox(height: 20),
                     ClipRRect(
@@ -317,15 +368,21 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     ),
                     IconButton(
                       icon: Icon(Icons.star_border, color: Colors.white),
-                      onPressed: () {},
+                      onPressed: () async {
+                        final result = await BulletPointPicker.show(
+                          context: context,
+                          currentBullet: selectedBullet,
+                        );
+                        if (result != null) {
+                          setState(() {
+                            selectedBullet = result;
+                            descController.text += '$selectedBullet ';
+                            descFocus.requestFocus();
+                          });
+                        }
+                      },
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.emoji_emotions_outlined,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {},
-                    ),
+
                     IconButton(
                       icon: Icon(Icons.text_fields, color: Colors.white),
                       onPressed: () {
@@ -342,7 +399,46 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     ),
                     IconButton(
                       icon: Icon(Icons.sell_outlined, color: Colors.white),
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            TextEditingController tagController =
+                                TextEditingController();
+                            return AlertDialog(
+                              title: Text("Add Hashtag"),
+                              content: TextField(
+                                controller: tagController,
+                                decoration: InputDecoration(
+                                  hintText: "#hashtag",
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    String tag = tagController.text.trim();
+                                    if (tag.isNotEmpty) {
+                                      setState(() {
+                                        hashtags.add(
+                                          tag.startsWith('#') ? tag : '#$tag',
+                                        );
+                                      });
+                                    }
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Add"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
                     IconButton(
                       icon: Icon(Icons.mic_none_outlined, color: Colors.white),
