@@ -14,7 +14,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
   String _text = '';
-  String _status = 'Tap the mic and start speaking';
+  String _status = 'Tap the mic to start speaking';
 
   @override
   void initState() {
@@ -47,6 +47,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
   void _startListening() {
     setState(() {
       _status = 'Listening...';
+      _isListening = true;
     });
 
     _speech.listen(
@@ -56,10 +57,6 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
         });
       },
     );
-
-    setState(() {
-      _isListening = true;
-    });
   }
 
   void _stopListening() async {
@@ -87,44 +84,52 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
         iconTheme: IconThemeData(color: Colors.white),
         title: Text('Speak Now', style: TextStyle(color: Colors.white)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              size: 100,
-              color: _isListening ? Colors.red : Colors.white54,
-            ),
-            SizedBox(height: 20),
-            Text(
-              _status,
-              style: TextStyle(color: Colors.white70, fontSize: 18),
-            ),
-            SizedBox(height: 30),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  _text.isEmpty ? 'Speak something...' : _text,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                  textAlign: TextAlign.center,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                _isListening ? Icons.mic : Icons.mic_none,
+                size: 100,
+                color: _isListening ? Colors.red : Colors.white54,
+              ),
+              SizedBox(height: 20),
+              Text(
+                _status,
+                style: TextStyle(color: Colors.white70, fontSize: 18),
+              ),
+              SizedBox(height: 30),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      _text.isEmpty ? 'Say something...' : _text,
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(horizontal: 36, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
+                icon: Icon(_isListening ? Icons.stop : Icons.mic),
+                label: Text(
+                  _isListening ? 'Stop' : 'Start Speaking',
+                  style: TextStyle(fontSize: 16),
+                ),
+                onPressed: _isListening ? _stopListening : _startListening,
               ),
-              icon: Icon(_isListening ? Icons.stop : Icons.mic),
-              label: Text(_isListening ? 'Stop' : 'Start Speaking'),
-              onPressed: _isListening ? _stopListening : _startListening,
-            ),
-            SizedBox(height: 20),
-          ],
+              SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );

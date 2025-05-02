@@ -10,7 +10,6 @@ class ThemePicker {
   }) {
     final List<Color> themeColors = [
       Color(0xFF0E1C2F), // original
-      Colors.white,
       Colors.black,
       const Color.fromARGB(255, 40, 0, 110),
       Colors.teal,
@@ -35,7 +34,7 @@ class ThemePicker {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Choose Background",
+                "Choose Theme",
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               SizedBox(height: 20),
