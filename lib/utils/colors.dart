@@ -16,3 +16,5 @@ const iconColor = secondaryColor;
 
 const primarylightColor = Color(0xFFBFC6FF);
 const cardColor = Color.fromARGB(255, 3, 54, 121);
+
+const bgc = Color(0xFF0E1C2F);

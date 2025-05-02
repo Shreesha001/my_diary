@@ -66,10 +66,36 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     "emoji": selectedEmoji ?? '',
                     "imagePath": selectedImage?.path ?? '',
                   });
+                } else {
+                  // Show warning dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                          "Missing Title",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        content: Text(
+                          "Please enter a title before saving your entry.",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text("OK"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 }
               },
               child: Text("SAVE", style: TextStyle(color: Colors.white)),
             ),
+
             SizedBox(width: 8),
           ],
         ),
@@ -264,87 +290,92 @@ class _AddEntryPageState extends State<AddEntryPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.line_weight_rounded, color: Colors.white),
-                    onPressed: () {
-                      ThemePicker.show(
-                        context: context,
-                        currentColor: backgroundColor,
-                        onSelected: (color) {
-                          setState(() {
-                            backgroundColor = color;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.image_outlined, color: Colors.white),
-                    onPressed: _pickImage,
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.star_border, color: Colors.white),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.emoji_emotions_outlined,
-                      color: Colors.white,
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.line_weight_rounded,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        ThemePicker.show(
+                          context: context,
+                          currentColor: backgroundColor,
+                          onSelected: (color) {
+                            setState(() {
+                              backgroundColor = color;
+                            });
+                          },
+                        );
+                      },
                     ),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.text_fields, color: Colors.white),
-                    onPressed: () {
-                      TextColorPicker.show(
-                        context: context,
-                        currentColor: textColor,
-                        onSelected: (color) {
-                          setState(() {
-                            textColor = color;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.sell_outlined, color: Colors.white),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.mic_none_outlined, color: Colors.white),
-                    onPressed: () async {
-                      String target = 'desc';
-                      if (titleFocus.hasFocus) {
-                        target = 'title';
-                      } else if (descFocus.hasFocus) {
-                        target = 'desc';
-                      }
-
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => SpeechToTextScreen(targetField: target),
-                        ),
-                      );
-
-                      if (result != null && result is Map<String, String>) {
-                        final spokenText = result['text'] ?? '';
-                        final targetField = result['target'] ?? 'desc';
-
-                        if (targetField == 'title') {
-                          titleController.text += spokenText;
-                        } else {
-                          descController.text += spokenText;
+                    IconButton(
+                      icon: Icon(Icons.image_outlined, color: Colors.white),
+                      onPressed: _pickImage,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.star_border, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.emoji_emotions_outlined,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.text_fields, color: Colors.white),
+                      onPressed: () {
+                        TextColorPicker.show(
+                          context: context,
+                          currentColor: textColor,
+                          onSelected: (color) {
+                            setState(() {
+                              textColor = color;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.sell_outlined, color: Colors.white),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.mic_none_outlined, color: Colors.white),
+                      onPressed: () async {
+                        String target = 'desc';
+                        if (titleFocus.hasFocus) {
+                          target = 'title';
+                        } else if (descFocus.hasFocus) {
+                          target = 'desc';
                         }
-                      }
-                    },
-                  ),
-                ],
+
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => SpeechToTextScreen(targetField: target),
+                          ),
+                        );
+
+                        if (result != null && result is Map<String, String>) {
+                          final spokenText = result['text'] ?? '';
+                          final targetField = result['target'] ?? 'desc';
+
+                          if (targetField == 'title') {
+                            titleController.text += spokenText;
+                          } else {
+                            descController.text += spokenText;
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

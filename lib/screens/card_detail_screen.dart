@@ -110,7 +110,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bgc,
       appBar: AppBar(
         backgroundColor: appBarColor,
         elevation: 0,
@@ -156,7 +156,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                 'Title',
                 style: TextStyle(
                   fontSize: 16,
-                  color: textSecondaryColor.withOpacity(0.8),
+                  color: Colors.white.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -175,7 +175,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: textPrimaryColor,
+                    color: Colors.white,
                   ),
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
@@ -184,9 +184,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                     ),
                     border: InputBorder.none,
                     hintText: 'Enter title...',
-                    hintStyle: TextStyle(
-                      color: textSecondaryColor.withOpacity(0.5),
-                    ),
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                   ),
                 ),
               ),
@@ -197,7 +195,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                 'Description',
                 style: TextStyle(
                   fontSize: 16,
-                  color: textSecondaryColor.withOpacity(0.8),
+                  color: Colors.white.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -214,7 +212,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                 child: TextField(
                   controller: _descController,
                   maxLines: 5,
-                  style: TextStyle(fontSize: 16, color: textSecondaryColor),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 16,
@@ -235,7 +233,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                 'Image',
                 style: TextStyle(
                   fontSize: 16,
-                  color: textSecondaryColor.withOpacity(0.8),
+                  color: Colors.white.withOpacity(0.8),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -272,7 +270,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                         child: Container(
                           padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.white.withOpacity(0.6),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -293,7 +291,7 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                     color: Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: textSecondaryColor.withOpacity(0.2),
+                      color: Colors.white.withOpacity(0.2),
                       width: 1.5,
                     ),
                   ),
@@ -303,14 +301,12 @@ class _CardDetailScreenState extends State<CardDetailScreen> {
                       Icon(
                         Icons.image_outlined,
                         size: 40,
-                        color: textSecondaryColor.withOpacity(0.4),
+                        color: Colors.white.withOpacity(0.4),
                       ),
                       SizedBox(height: 8),
                       Text(
                         "No image selected",
-                        style: TextStyle(
-                          color: textSecondaryColor.withOpacity(0.6),
-                        ),
+                        style: TextStyle(color: Colors.white.withOpacity(0.6)),
                       ),
                     ],
                   ),
