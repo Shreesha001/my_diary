@@ -12,7 +12,7 @@ class ThemePicker {
       Color(0xFF0E1C2F), // original
       Colors.white,
       Colors.black,
-      Colors.deepPurple,
+      const Color.fromARGB(255, 40, 0, 110),
       Colors.teal,
       Colors.blueGrey,
       Color(0xFF1B1B2F),

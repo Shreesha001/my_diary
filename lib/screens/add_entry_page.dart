@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:my_diary/utils/colors.dart';
+import 'package:my_diary/widgets/speech_to_text_screen.dart';
 import 'package:my_diary/widgets/text_color_picker.dart';
 import 'package:my_diary/widgets/theme_picker.dart';
-import 'package:my_diary/widgets/voice_input.dart';
 
 class AddEntryPage extends StatefulWidget {
   @override
@@ -20,6 +20,8 @@ class _AddEntryPageState extends State<AddEntryPage> {
   File? selectedImage;
   Color backgroundColor = const Color(0xFF0E1C2F);
   Color textColor = Colors.white;
+  final FocusNode titleFocus = FocusNode();
+  final FocusNode descFocus = FocusNode();
 
   final ImagePicker _picker = ImagePicker();
   TextAlign selectedAlign = TextAlign.left;
@@ -205,6 +207,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                   ),
                   SizedBox(height: 20),
                   TextField(
+                    focusNode: titleFocus,
                     controller: titleController,
                     style: TextStyle(color: textColor, fontSize: 18),
                     decoration: InputDecoration(
@@ -215,6 +218,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                   ),
                   SizedBox(height: 10),
                   TextField(
+                    focusNode: descFocus,
                     controller: descController,
                     style: TextStyle(color: textColor),
                     maxLines: null,
@@ -313,19 +317,31 @@ class _AddEntryPageState extends State<AddEntryPage> {
                   IconButton(
                     icon: Icon(Icons.mic_none_outlined, color: Colors.white),
                     onPressed: () async {
-                      await Navigator.push(
+                      String target = 'desc';
+                      if (titleFocus.hasFocus) {
+                        target = 'title';
+                      } else if (descFocus.hasFocus) {
+                        target = 'desc';
+                      }
+
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) => VoiceInput(
-                                onTextRecognized: (spokenText) {
-                                  // Append to description or title as needed
-                                  descController.text += spokenText + " ";
-                                  // or: titleController.text += spokenText + " ";
-                                },
-                              ),
+                              (_) => SpeechToTextScreen(targetField: target),
                         ),
                       );
+
+                      if (result != null && result is Map<String, String>) {
+                        final spokenText = result['text'] ?? '';
+                        final targetField = result['target'] ?? 'desc';
+
+                        if (targetField == 'title') {
+                          titleController.text += spokenText;
+                        } else {
+                          descController.text += spokenText;
+                        }
+                      }
                     },
                   ),
                 ],
